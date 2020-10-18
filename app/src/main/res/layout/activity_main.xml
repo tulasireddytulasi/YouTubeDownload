@@ -11,14 +11,17 @@
     <EditText
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_margin="20dp"
-        android:hint="Enter Youtube Video Url"
-        android:minHeight="20dp"
+        android:layout_marginTop="52dp"
+
+        android:background="@drawable/edit"
+        android:hint="  Enter Youtube Video Url"
+        android:minHeight="30dp"
         android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="32dp" />
+        tools:layout_editor_absoluteX="0dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -32,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:text="Paste" />
 
         <Button
@@ -41,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/paste"
             android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:text="Download" />
 
         <TextView
@@ -49,11 +52,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/download"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:layout_centerHorizontal="true"
             android:text="Enter YouTube Url"/>
-
-
 
     </RelativeLayout>
 

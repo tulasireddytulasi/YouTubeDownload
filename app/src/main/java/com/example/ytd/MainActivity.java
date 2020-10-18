@@ -77,11 +77,11 @@ public class MainActivity extends AppCompatActivity {
                     if(url.contains("https://www.youtube.com/watch?v=") || url.contains("https://youtu.be/")){
                         CheckPermission();
                     }else {
-                        info.setText(" Enter Only YouTube Url");
+                        info.setText("Enter Only YouTube Url");
                         Toast.makeText(MainActivity.this," Enter Only YouTube Url", Toast.LENGTH_SHORT).show();
                     }
                 }else {
-                    info.setText(" Enter YouTube Url");
+                    info.setText("Enter YouTube Url");
                     Toast.makeText(MainActivity.this," Enter YouTube Url", Toast.LENGTH_SHORT).show();
                 }
 
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             public void onUrisAvailable(String videoId, String videoTitle, SparseArray<YtFile> ytFiles) {
                 if ((ytFiles != null)) {
                     String downloadURL = ytFiles.get(itag).getUrl();
-                  //  Log.e("Download URL:", downloadURL);
+                    Log.e("Download URL:", downloadURL);
 
                     if (downloadURL != null) {
                         button.setEnabled(false);
