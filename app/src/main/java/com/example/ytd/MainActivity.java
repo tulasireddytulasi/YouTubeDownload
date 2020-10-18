@@ -4,16 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.DownloadManager;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -31,23 +25,15 @@ import com.androidnetworking.interfaces.DownloadProgressListener;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.DialogOnAnyDeniedMultiplePermissionsListener;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
-import java.util.Date;
 import java.util.List;
 
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YouTubeUriExtractor;
 import at.huber.youtubeExtractor.YtFile;
-
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -75,20 +61,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 url = editText.getText().toString().trim();
                 if (!url.isEmpty()){
-
                     if(url.contains("https://www.youtube.com/watch?v=") || url.contains("https://youtu.be/")){
                         CheckPermission();
                     }else {
                         Toast.makeText(MainActivity.this," Enter Only YouTube Url", Toast.LENGTH_SHORT).show();
                     }
-
                 }else {
                     Toast.makeText(MainActivity.this," Enter YouTube Url", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
     }
 
     private void CheckPermission() {
@@ -173,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                         // do anything with progress
                         float progress = (float) bytesDownloaded / totalBytes * 100;
                         progressBar.setProgress((int)progress);
-                        textView.setText(""+(int)progress+"%");
+                        textView.setText((int)progress+"%");
                     }
                 })
                 .startDownload(new DownloadListener() {
