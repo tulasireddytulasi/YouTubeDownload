@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,10 +42,11 @@ import at.huber.youtubeExtractor.YtFile;
 public class MainActivity extends AppCompatActivity {
 
     private EditText editText;
-    private Button button;
+    private Button button, paste;
     private String url;
     private ProgressBar progressBar;
-    private TextView textView;
+    private TextView textView, info;
+    ClipboardManager clipboardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,10 +55,19 @@ public class MainActivity extends AppCompatActivity {
         AndroidNetworking.initialize(getApplicationContext());
         editText = findViewById(R.id.edit_text);
         button = findViewById(R.id.download);
+        paste = findViewById(R.id.paste);
         progressBar = findViewById(R.id.progress_bar);
         textView = findViewById(R.id.percent);
+        info = findViewById(R.id.info);
         progressBar.setMax(100);
         progressBar.setProgress(0);
+        clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        paste.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadClip();
+            }
+        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,13 +77,27 @@ public class MainActivity extends AppCompatActivity {
                     if(url.contains("https://www.youtube.com/watch?v=") || url.contains("https://youtu.be/")){
                         CheckPermission();
                     }else {
+                        info.setText(" Enter Only YouTube Url");
                         Toast.makeText(MainActivity.this," Enter Only YouTube Url", Toast.LENGTH_SHORT).show();
                     }
                 }else {
+                    info.setText(" Enter YouTube Url");
                     Toast.makeText(MainActivity.this," Enter YouTube Url", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
+    }
+
+    private void loadClip() {
+
+        if (clipboardManager.hasPrimaryClip()){
+            ClipData clipData = clipboardManager.getPrimaryClip();
+            ClipData.Item item = clipData.getItemAt(0);
+            info.setText(item.getText().toString());
+            editText.setText(item.getText().toString());
+            Log.e("c",item.getText().toString());
+        }
     }
 
     private void CheckPermission() {
@@ -120,7 +147,10 @@ public class MainActivity extends AppCompatActivity {
                         button.setEnabled(false);
                         Download_video(downloadURL, videoTitle);
                     }
-                } else Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                } else {
+                    info.setText("Error");
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                }
             }
         };
         youTubeUriExtractor.execute(VideoURLDownload);
@@ -129,10 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void Download_video(final String uri, final String filename){
-//        progressDialog.show();
         Log.e("Download URL:", uri);
 
-        File myDirectory = new File(Environment.getExternalStorageDirectory(), "Movies12");
+        File myDirectory = new File(Environment.getExternalStorageDirectory(), "YouTube_Videos");
         if(myDirectory.exists()) {
             Toast.makeText(MainActivity.this, "No Folder", Toast.LENGTH_SHORT).show();
             Log.e("dirs", "No Folder");
@@ -143,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.e("dir", myDirectory.toString());
+        info.setText("Download Started, Please wait untill download complete...");
 
         final File file = new File(myDirectory, filename);
         AndroidNetworking.download(uri, myDirectory.toString(), filename+".mp4")
@@ -162,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         button.setEnabled(true);
+                        info.setText(filename + "Downloading Completed Successfully...");
                         Toast.makeText(getApplicationContext(), filename + " Downloaded", Toast.LENGTH_SHORT).show();
                         Log.d("Tag", "Scan finished. You can view the image in the DDDDDDD now.");
                         try {
@@ -184,8 +215,15 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
                         Log.e("e", error.toString());
                         button.setEnabled(true);
+                        info.setText(error.toString());
                     }
                 }); // === end download ===
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadClip();
+        Log.e("c","stated");
+    }
 }

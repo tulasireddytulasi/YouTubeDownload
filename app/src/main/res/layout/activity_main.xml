@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <EditText
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
@@ -15,31 +16,46 @@
         android:hint="Enter Youtube Video Url"
         android:minHeight="20dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="20dp"
-        tools:layout_editor_absoluteY="54dp"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="32dp" />
 
-    <Button
-        android:id="@+id/download"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edit_text"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:text="Download"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_text" />
-
-    <TextView
-        android:id="@+id/display"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Downloading/....."
         app:layout_constraintBottom_toTopOf="@+id/progress_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/download" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_text"
+        tools:ignore="MissingConstraints">
+
+        <Button
+            android:id="@+id/paste"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Paste" />
+
+        <Button
+            android:id="@+id/download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/paste"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Download" />
+
+        <TextView
+            android:id="@+id/info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/download"
+            android:layout_margin="10dp"
+            android:layout_centerHorizontal="true"
+            android:text="Enter YouTube Url"/>
+
+
+
+    </RelativeLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"
