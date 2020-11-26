@@ -1,13 +1,16 @@
 package com.example.ytd;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Intent;
+import android.content.Context;
 import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,6 +19,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +41,7 @@ import java.util.List;
 
 import at.huber.youtubeExtractor.YouTubeUriExtractor;
 import at.huber.youtubeExtractor.YtFile;
+import es.dmoral.toasty.Toasty;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -46,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private String url;
     private ProgressBar progressBar;
     private TextView textView, info;
+    private Toolbar toolbar;
+    private LinearLayout linearLayout;
     ClipboardManager clipboardManager;
 
     @Override
@@ -53,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AndroidNetworking.initialize(getApplicationContext());
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        linearLayout = findViewById(R.id.linear1);
         editText = findViewById(R.id.edit_text);
         button = findViewById(R.id.download);
         paste = findViewById(R.id.paste);
@@ -72,21 +81,40 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                url = editText.getText().toString().trim();
-                if (!url.isEmpty()){
-                    if(url.contains("https://www.youtube.com/watch?v=") || url.contains("https://youtu.be/")){
-                        CheckPermission();
-                    }else {
-                        info.setText("Enter Only YouTube Url");
-                        Toast.makeText(MainActivity.this," Enter Only YouTube Url", Toast.LENGTH_SHORT).show();
-                    }
+                if (checkInternetConnection(getApplicationContext())){
+                    Download();
                 }else {
-                    info.setText("Enter YouTube Url");
-                    Toast.makeText(MainActivity.this," Enter YouTube Url", Toast.LENGTH_SHORT).show();
+                    Toasty.warning(getApplicationContext(), "Check your Internet Connection...", Toasty.LENGTH_LONG).show();
                 }
-
             }
         });
+    }
+
+    private void Download() {
+        url = editText.getText().toString().trim();
+        if (!url.isEmpty()){
+            if(url.contains("https://www.youtube.com/watch?v=") || url.contains("https://youtu.be/")){
+                CheckPermission();
+            }else {
+                info.setText("Enter Only YouTube Url");
+                Toasty.warning(getApplicationContext(), "Enter Only YouTube Url", Toasty.LENGTH_LONG).show();
+            }
+        }else {
+            info.setText("Enter YouTube Url");
+            Toasty.warning(getApplicationContext(), "Enter YouTube Url", Toasty.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean checkInternetConnection(Context context){
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+        if ((wifi != null && wifi.isConnected()) || (mobi != null && mobi.isConnected())){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     private void loadClip() {
@@ -121,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
                                            .withIcon(R.mipmap.ic_launcher)
                                            .build();
                        }
-
                     }
 
                     @Override
@@ -149,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } else {
                     info.setText("Error");
-                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                    Toasty.error(getApplicationContext(), "Error", Toasty.LENGTH_LONG).show();
                 }
             }
         };
@@ -163,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
 
         File myDirectory = new File(Environment.getExternalStorageDirectory(), "YouTube_Videos");
         if(myDirectory.exists()) {
-            Toast.makeText(MainActivity.this, "No Folder", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(MainActivity.this, "No Folder", Toast.LENGTH_SHORT).show();
             Log.e("dirs", "No Folder");
         }else{
             myDirectory.mkdirs();
@@ -173,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("dir", myDirectory.toString());
         info.setText("Download Started, Please wait untill download complete...");
+        linearLayout.setVisibility(View.VISIBLE);
 
         final File file = new File(myDirectory, filename);
         AndroidNetworking.download(uri, myDirectory.toString(), filename+".mp4")
@@ -192,8 +220,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDownloadComplete() {
                         button.setEnabled(true);
-                        info.setText(filename + "Downloading Completed Successfully...");
-                        Toast.makeText(getApplicationContext(), filename + " Downloaded", Toast.LENGTH_SHORT).show();
+                        info.setText(filename);
+                        Toasty.success(getApplicationContext(), "Downloading Completed Successfully...", Toast.LENGTH_LONG, true).show();
                         Log.d("Tag", "Scan finished. You can view the image in the DDDDDDD now.");
                         try {
                             MediaScannerConnection.scanFile(getApplicationContext(),
@@ -212,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(ANError error) {
                         // handle error
-                        Toast.makeText(getApplicationContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+                        Toasty.error(getApplicationContext(), "Error: " + error, Toast.LENGTH_LONG, true).show();
                         Log.e("e", error.toString());
                         button.setEnabled(true);
                         info.setText(error.toString());

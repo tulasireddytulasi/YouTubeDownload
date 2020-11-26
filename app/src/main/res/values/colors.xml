@@ -3,4 +3,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="white1">#F2F2F2</color>
+    <color name="black">#000</color>
+    <color name="youtube_black">#282828</color>
+    <color name="pink">#E91E63</color>
 </resources>
